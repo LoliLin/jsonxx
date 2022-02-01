@@ -610,7 +610,7 @@ namespace json {
         return input;
     }
 
-    std::string tag( unsigned format, unsigned depth, const std::string &name, const jsonxx::Value &t, PrintMode printMode, int floatPrecision = std::numeric_limits<long double>::digits10 + 1) {
+    std::string tag( unsigned format, unsigned depth, const std::string &name, const jsonxx::Value &t, PrintMode printMode, int floatPrecision = std::numeric_limits<double>::digits10 + 1) {
         std::stringstream ss;
         std::string tab(depth, '\t');
         std::string newLine("\n");
@@ -827,7 +827,7 @@ std::string close_tag( unsigned format, char type, const std::string &name ) {
     }
 }
 
-std::string tag( unsigned format, unsigned depth, const std::string &name, const jsonxx::Value &t, const std::string &attr = std::string(), int floatPrecision = std::numeric_limits<long double>::digits10 + 1) {
+std::string tag( unsigned format, unsigned depth, const std::string &name, const jsonxx::Value &t, const std::string &attr = std::string(), int floatPrecision = std::numeric_limits<double>::digits10 + 1) {
     std::stringstream ss;
     const std::string tab(depth, '\t');
 
