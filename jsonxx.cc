@@ -679,7 +679,6 @@ namespace json {
                     ss << "null"; // NaN or other stuff we cannot represent
                 }
                 
-                ss << std::setprecision(floatPrecision);
                 return ss.str() + "," + newLine;
         }
     }
