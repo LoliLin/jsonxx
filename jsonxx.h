@@ -139,8 +139,8 @@ namespace jsonxx {
         bool empty() const;
         
         const std::map<std::string, Value*>& kv_map() const;
-        std::string json(PrintMode printMode = PrintMode::Compact) const;
-        std::string xml( unsigned format = JSONx, const std::string &header = std::string(), const std::string &attrib = std::string() ) const;
+        std::string json(PrintMode printMode = PrintMode::Compact, int floatPrecision = std::numeric_limits<long double>::digits10 + 1) const;
+        std::string xml( unsigned format = JSONx, const std::string &header = std::string(), const std::string &attrib = std::string(), int floatPrecision = std::numeric_limits<long double>::digits10 + 1) const;
         std::string write( unsigned format ) const;
         
         void reset();
@@ -189,8 +189,8 @@ namespace jsonxx {
         const std::vector<Value*>& values() const {
             return values_;
         }
-        std::string json(PrintMode printMode = PrintMode::Compact) const;
-        std::string xml( unsigned format = JSONx, const std::string &header = std::string(), const std::string &attrib = std::string() ) const;
+        std::string json(PrintMode printMode = PrintMode::Compact, int floatPrecision = std::numeric_limits<long double>::digits10 + 1) const;
+        std::string xml( unsigned format = JSONx, const std::string &header = std::string(), const std::string &attrib = std::string(), int floatPrecision = std::numeric_limits<long double>::digits10 + 1) const;
         
         std::string write( unsigned format ) const { return format == JSON ? json() : xml(format); }
         void reset();
