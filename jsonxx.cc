@@ -678,7 +678,6 @@ namespace json {
                     JSONXX_WARN( "No JSONXX support for number value " << t.number_value_ );
                     ss << "null"; // NaN or other stuff we cannot represent
                 }
-                
                 return ss.str() + "," + newLine;
         }
     }
