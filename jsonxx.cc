@@ -610,7 +610,7 @@ namespace json {
         return input;
     }
 
-    std::string tag( unsigned format, unsigned depth, const std::string &name, const jsonxx::Value &t, PrintMode printMode) {
+    std::string tag( unsigned format, unsigned depth, const std::string &name, const jsonxx::Value &t, PrintMode printMode, int floatPrecision = std::numeric_limits<double>::digits10 + 1) {
         std::stringstream ss;
         std::string tab(depth, '\t');
         std::string newLine("\n");
@@ -646,7 +646,7 @@ namespace json {
                 ss << "[" + newLine;
                 for(Array::container::const_iterator it = t.array_value_->values().begin(),
                     end = t.array_value_->values().end(); it != end; ++it )
-                  ss << tag( format, depth+1, std::string(), **it, printMode );
+                  ss << tag( format, depth+1, std::string(), **it, printMode, floatPrecision );
                 return remove_last_comma( ss.str() ) + tab + "]" "," + newLine;
 
             case jsonxx::Value::STRING_:
@@ -657,13 +657,13 @@ namespace json {
                 ss << "{" + newLine;
                 for(Object::container::const_iterator it=t.object_value_->kv_map().begin(),
                     end = t.object_value_->kv_map().end(); it != end ; ++it)
-                  ss << tag( format, depth+1, it->first, *it->second, printMode );
+                  ss << tag( format, depth+1, it->first, *it->second, printMode, floatPrecision);
                 return remove_last_comma( ss.str() ) + tab + "}" "," + newLine;
 
             case jsonxx::Value::NUMBER_:
                 if (isfinite(t.number_value_)) {
                     // max precision
-                    ss << std::setprecision(std::numeric_limits<long double>::digits10 + 1);
+                    ss << std::setprecision(floatPrecision);
                     ss << t.number_value_;
                 }
 #if JSONXX_HANDLE_INFINITY
@@ -825,7 +825,7 @@ std::string close_tag( unsigned format, char type, const std::string &name ) {
     }
 }
 
-std::string tag( unsigned format, unsigned depth, const std::string &name, const jsonxx::Value &t, const std::string &attr = std::string() ) {
+std::string tag( unsigned format, unsigned depth, const std::string &name, const jsonxx::Value &t, const std::string &attr = std::string(), int floatPrecision = std::numeric_limits<double>::digits10 + 1) {
     std::stringstream ss;
     const std::string tab(depth, '\t');
 
@@ -844,7 +844,7 @@ std::string tag( unsigned format, unsigned depth, const std::string &name, const
         case jsonxx::Value::ARRAY_:
             for(Array::container::const_iterator it = t.array_value_->values().begin(),
                 end = t.array_value_->values().end(); it != end; ++it )
-              ss << tag( format, depth+1, std::string(), **it );
+              ss << tag( format, depth+1, std::string(), **it, std::string(), floatPrecision );
             return tab + open_tag( format, 'a', name, attr ) + '\n'
                        + ss.str()
                  + tab + close_tag( format, 'a', name ) + '\n';
@@ -858,14 +858,14 @@ std::string tag( unsigned format, unsigned depth, const std::string &name, const
         case jsonxx::Value::OBJECT_:
             for(Object::container::const_iterator it=t.object_value_->kv_map().begin(),
                 end = t.object_value_->kv_map().end(); it != end ; ++it)
-              ss << tag( format, depth+1, it->first, *it->second );
+              ss << tag( format, depth+1, it->first, *it->second, std::string(), floatPrecision );
             return tab + open_tag( format, 'o', name, attr ) + '\n'
                        + ss.str()
                  + tab + close_tag( format, 'o', name ) + '\n';
 
         case jsonxx::Value::NUMBER_:
             // max precision
-            ss << std::setprecision(std::numeric_limits<long double>::digits10 + 1);
+            ss << std::setprecision(floatPrecision);
             ss << t.number_value_;
             return tab + open_tag( format, 'n', name, std::string(), format == jsonxx::JXMLex ? ss.str() : std::string() )
                        + ss.str()
@@ -909,20 +909,20 @@ const char *defrootattrib[] = {
 
 } // namespace jsonxx::anon
 
-std::string Object::json(PrintMode printMode) const {
+std::string Object::json(PrintMode printMode, int floatPrecision) const {
     using namespace json;
 
     jsonxx::Value v;
     v.object_value_ = const_cast<jsonxx::Object*>(this);
     v.type_ = jsonxx::Value::OBJECT_;
 
-    std::string result = tag( jsonxx::JSON, 0, std::string(), v, printMode );
+    std::string result = tag( jsonxx::JSON, 0, std::string(), v, printMode, floatPrecision );
 
     v.object_value_ = 0;
     return remove_last_comma( result );
 }
 
-std::string Object::xml( unsigned format, const std::string &header, const std::string &attrib ) const {
+std::string Object::xml( unsigned format, const std::string &header, const std::string &attrib, int floatPrecision ) const {
     using namespace xml;
     JSONXX_ASSERT( format == jsonxx::JSONx || format == jsonxx::JXML || format == jsonxx::JXMLex || format == jsonxx::TaggedXML );
 
@@ -930,26 +930,26 @@ std::string Object::xml( unsigned format, const std::string &header, const std::
     v.object_value_ = const_cast<jsonxx::Object*>(this);
     v.type_ = jsonxx::Value::OBJECT_;
 
-    std::string result = tag( format, 0, std::string(), v, attrib.empty() ? std::string(defrootattrib[format]) : attrib );
+    std::string result = tag( format, 0, std::string(), v, attrib.empty() ? std::string(defrootattrib[format]) : attrib, floatPrecision );
 
     v.object_value_ = 0;
     return ( header.empty() ? std::string(defheader[format]) : header ) + result;
 }
 
-std::string Array::json(PrintMode printMode) const {
+std::string Array::json(PrintMode printMode, int floatPrecision) const {
     using namespace json;
 
     jsonxx::Value v;
     v.array_value_ = const_cast<jsonxx::Array*>(this);
     v.type_ = jsonxx::Value::ARRAY_;
 
-    std::string result = tag( jsonxx::JSON, 0, std::string(), v, printMode );
+    std::string result = tag( jsonxx::JSON, 0, std::string(), v, printMode, floatPrecision);
 
     v.array_value_ = 0;
     return remove_last_comma( result );
 }
 
-std::string Array::xml( unsigned format, const std::string &header, const std::string &attrib ) const {
+std::string Array::xml( unsigned format, const std::string &header, const std::string &attrib, int floatPrecision ) const {
     using namespace xml;
     JSONXX_ASSERT( format == jsonxx::JSONx || format == jsonxx::JXML || format == jsonxx::JXMLex || format == jsonxx::TaggedXML );
 
@@ -957,7 +957,7 @@ std::string Array::xml( unsigned format, const std::string &header, const std::s
     v.array_value_ = const_cast<jsonxx::Array*>(this);
     v.type_ = jsonxx::Value::ARRAY_;
 
-    std::string result = tag( format, 0, std::string(), v, attrib.empty() ? std::string(defrootattrib[format]) : attrib );
+    std::string result = tag( format, 0, std::string(), v, attrib.empty() ? std::string(defrootattrib[format]) : attrib, floatPrecision );
 
     v.array_value_ = 0;
     return ( header.empty() ? std::string(defheader[format]) : header ) + result;
