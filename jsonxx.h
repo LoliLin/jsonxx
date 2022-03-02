@@ -98,6 +98,9 @@ namespace jsonxx {
     
     // JSON representation of infinite numbers
     constexpr const char* InfinityRepresentation = "1e500";
+
+    // Default value
+    static const String EmptyString = "";
     
     // Identity meta-function
     template <typename T>
@@ -135,6 +138,13 @@ namespace jsonxx {
         template <typename T>
         const T& get(const std::string& key, const typename identity<T>::type& default_value) const;
         
+        // Delete unsafe operation
+        template <typename T>
+        const T& get(const std::string& key, typename identity<jsonxx::Object>::type&& default_value) = delete;
+        
+        template <typename T>
+        const T& get(const std::string& key, typename identity<jsonxx::String>::type&& default_value) = delete;
+
         size_t size() const;
         bool empty() const;
         
@@ -167,6 +177,8 @@ namespace jsonxx {
         std::string odd;
     };
     
+    static const Object EmptyObject = {};
+    
     class Array {
     public:
         Array();
@@ -186,6 +198,13 @@ namespace jsonxx {
         template <typename T>
         const T& get(unsigned int i, const typename identity<T>::type& default_value) const;
         
+        // Delete unsafe operation
+        template <typename T>
+        const T& get(unsigned int i, typename identity<jsonxx::String>::type&& default_value) = delete;
+        
+        template <typename T>
+        const T& get(unsigned int i, typename identity<jsonxx::Object>::type&& default_value) = delete;
+
         const std::vector<Value*>& values() const {
             return values_;
         }
@@ -209,6 +228,8 @@ namespace jsonxx {
         static bool parse(std::istream& input, Array& array);
         container values_;
     };
+
+    static const Array EmptyArray = {};
     
     // A value could be a number, an array, a string, an object, a
     // boolean, or null
