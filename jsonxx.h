@@ -104,6 +104,8 @@ namespace jsonxx {
     static const Number Zero = 0;
     static const Number MinusOne = -1;
     static const Number One = 1;
+    static const Boolean True = true;
+    static const Boolean False = false;
 
     // Identity meta-function
     template <typename T>
@@ -388,7 +390,9 @@ number_value_ = static_cast<long double>(n); \
     protected:
         static bool parse(std::istream& input, Value& value);
     };
-    
+
+    static const Value EmptyValue = {};
+
     template <typename T>
     bool Array::has(unsigned int i) const {
         if (i >= size()) {
@@ -562,11 +566,6 @@ number_value_ = static_cast<long double>(n); \
         *this << Value(value);
         return *this;
     }
-
-    static const Value EmptyValue = {};
-
-    static const Boolean True = true;
-    static const Boolean False = false;
 }  // namespace jsonxx
 
 std::ostream& operator<<(std::ostream& stream, const jsonxx::Value& v);
