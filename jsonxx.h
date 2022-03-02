@@ -102,11 +102,8 @@ namespace jsonxx {
     // Default value
     static const String EmptyString = "";
     static const Number Zero = 0;
-<<<<<<< HEAD
     static const Number MinusOne = -1;
     static const Number One = 1;
-=======
->>>>>>> c47bf6f88390ab84adc2fc02f5473ef8de5c5c60
 
     // Identity meta-function
     template <typename T>
