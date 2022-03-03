@@ -98,7 +98,15 @@ namespace jsonxx {
     
     // JSON representation of infinite numbers
     constexpr const char* InfinityRepresentation = "1e500";
-    
+
+    // Default value
+    static const String EmptyString = "";
+    static const Number Zero = 0;
+    static const Number MinusOne = -1;
+    static const Number One = 1;
+    static const Boolean True = true;
+    static const Boolean False = false;
+
     // Identity meta-function
     template <typename T>
     struct identity {
@@ -131,10 +139,14 @@ namespace jsonxx {
         T& get(const std::string& key);
         template <typename T>
         const T& get(const std::string& key) const;
-        
+ 
         template <typename T>
         const T& get(const std::string& key, const typename identity<T>::type& default_value) const;
-        
+    
+        // Delete unsafe operation
+        template <typename T>
+        const T& get(const std::string& key, typename identity<T>::type&& default_value) const = delete;
+
         size_t size() const;
         bool empty() const;
         
@@ -167,6 +179,8 @@ namespace jsonxx {
         std::string odd;
     };
     
+    static const Object EmptyObject = {};
+    
     class Array {
     public:
         Array();
@@ -186,6 +200,10 @@ namespace jsonxx {
         template <typename T>
         const T& get(unsigned int i, const typename identity<T>::type& default_value) const;
         
+        // Delete unsafe operation
+        template <typename T>
+        const T& get(unsigned int i, typename identity<T>::type&& default_value) const = delete;
+
         const std::vector<Value*>& values() const {
             return values_;
         }
@@ -209,6 +227,8 @@ namespace jsonxx {
         static bool parse(std::istream& input, Array& array);
         container values_;
     };
+
+    static const Array EmptyArray = {};
     
     // A value could be a number, an array, a string, an object, a
     // boolean, or null
@@ -370,7 +390,9 @@ number_value_ = static_cast<long double>(n); \
     protected:
         static bool parse(std::istream& input, Value& value);
     };
-    
+
+    static const Value EmptyValue = {};
+
     template <typename T>
     bool Array::has(unsigned int i) const {
         if (i >= size()) {
@@ -544,7 +566,6 @@ number_value_ = static_cast<long double>(n); \
         *this << Value(value);
         return *this;
     }
-    
 }  // namespace jsonxx
 
 std::ostream& operator<<(std::ostream& stream, const jsonxx::Value& v);
