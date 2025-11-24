@@ -9,13 +9,11 @@
 #define JSONXX_DEFINE_H
 
 #include <cstddef>
-#include <iostream>
 #include <limits>
 #include <map>
 #include <vector>
 #include <string>
 #include <string_view>
-#include <sstream>
 
 // jsonxx versioning: major.minor-extra where
 // major = { number }
@@ -48,6 +46,10 @@
 #else
 #define JSONXX_WARN(...) ;
 #endif
+
+namespace std {
+    class iostream;
+}
 
 namespace jsonxx {
 
