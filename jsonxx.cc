@@ -8,6 +8,7 @@
 #include "jsonxx.h"
 
 #include <cctype>
+#include <cassert>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
