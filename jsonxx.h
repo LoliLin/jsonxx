@@ -9,6 +9,7 @@
 #define JSONXX_DEFINE_H
 
 #include <cstddef>
+#include <iostream>
 #include <limits>
 #include <map>
 #include <vector>
@@ -46,10 +47,6 @@
 #else
 #define JSONXX_WARN(...) ;
 #endif
-
-namespace std {
-    class iostream;
-}
 
 namespace jsonxx {
 
